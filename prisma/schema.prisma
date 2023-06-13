@@ -60,7 +60,7 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    Predictions   Predictions[]
+    predictions   Predictions[]
     points        Int           @default(0)
 }
 
@@ -73,35 +73,33 @@ model VerificationToken {
 }
 
 model Fixture {
-    id            String        @id
-    homeTeamId    String
-    awayTeamId    String
-    homeTeam      Team          @relation("homeTeam", fields: [homeTeamId], references: [id])
-    awayTeam      Team          @relation("awayTeam", fields: [awayTeamId], references: [id])
-    homeTeamScore Int
-    awayTeamScore Int
-    matchweekId   String
-    played        Boolean
-    Matchweek     Matchweek     @relation(fields: [matchweekId], references: [id])
-    Predictions   Predictions[]
-    open          Boolean       @default(true)
+    fixtureId       String        @id
+    homeTeamName    String
+    awayTeamName    String
+    homeTeam        Team          @relation("homeTeam", fields: [homeTeamName], references: [name])
+    awayTeam        Team          @relation("awayTeam", fields: [awayTeamName], references: [name])
+    homeTeamScore   Int
+    awayTeamScore   Int
+    matchweekNumber Int
+    played          Boolean
+    matchweek       Matchweek     @relation(fields: [matchweekNumber], references: [number])
+    predictions     Predictions[]
+    open            Boolean       @default(true)
 
-    @@index([homeTeamId])
-    @@index([awayTeamId])
-    @@index([matchweekId])
+    @@index([homeTeamName])
+    @@index([awayTeamName])
+    @@index([matchweekNumber])
 }
 
 model Team {
-    id   String @id
-    name String
-
+    name         String    @id
+    stadium      String
     homeFixtures Fixture[] @relation("homeTeam")
     awayFixtures Fixture[] @relation("awayTeam")
 }
 
 model Matchweek {
-    id       String    @id
-    name     String
+    number   Int       @id
     fixtures Fixture[]
     played   Boolean
 }
@@ -112,7 +110,7 @@ model Predictions {
     fixtureId String
     homeScore Int
     awayScore Int
-    Fixture   Fixture @relation(fields: [fixtureId], references: [id])
+    Fixture   Fixture @relation(fields: [fixtureId], references: [fixtureId])
     User      User    @relation(fields: [userId], references: [id])
 
     @@index([userId])
