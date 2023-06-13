@@ -67,22 +67,22 @@ model VerificationToken {
 }
 
 model Fixture {
-    fixtureId       String        @id
-    homeTeamName    String
-    awayTeamName    String
-    homeTeam        Team          @relation("homeTeam", fields: [homeTeamName], references: [name])
-    awayTeam        Team          @relation("awayTeam", fields: [awayTeamName], references: [name])
-    homeTeamScore   Int
-    awayTeamScore   Int
-    matchweekNumber Int
-    played          Boolean
-    matchweek       Matchweek     @relation(fields: [matchweekNumber], references: [number])
-    predictions     Predictions[]
-    open            Boolean       @default(true)
+    fixtureId      String        @id
+    homeTeamName   String
+    awayTeamName   String
+    homeTeam       Team          @relation("homeTeam", fields: [homeTeamName], references: [name])
+    awayTeam       Team          @relation("awayTeam", fields: [awayTeamName], references: [name])
+    homeTeamScore  Int
+    awayTeamScore  Int
+    gameweekNumber Int
+    played         Boolean
+    gameweek       Gameweek      @relation(fields: [gameweekNumber], references: [number])
+    predictions    Predictions[]
+    open           Boolean       @default(true)
 
     @@index([homeTeamName])
     @@index([awayTeamName])
-    @@index([matchweekNumber])
+    @@index([gameweekNumber])
 }
 
 model Team {
@@ -92,7 +92,7 @@ model Team {
     awayFixtures Fixture[] @relation("awayTeam")
 }
 
-model Matchweek {
+model Gameweek {
     number   Int       @id
     fixtures Fixture[]
     played   Boolean
