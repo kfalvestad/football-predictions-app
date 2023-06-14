@@ -1,6 +1,8 @@
 import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
+import { z } from "zod";
+import { FixtureView } from "~/components/fixture-view";
 
 const Home: NextPage = () => {
   const gameweeks = api.gameweek.getAll.useQuery();
@@ -9,10 +11,10 @@ const Home: NextPage = () => {
       {gameweeks.data?.map((gameweek) => (
         <div key={gameweek.number}>
           <div>{gameweek.number}</div>
-          <ul>
+          <ul className="space-y-20">
             {gameweek.fixtures.map((fixture) => (
               <li key={fixture.fixtureId}>
-                {fixture.homeTeam.name} VS. {fixture.awayTeam.name}
+                <FixtureView fixture={fixture}></FixtureView>
               </li>
             ))}
           </ul>
