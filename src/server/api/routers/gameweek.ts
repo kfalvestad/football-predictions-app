@@ -9,6 +9,7 @@ export const gameweekRouter = createTRPCRouter({
           include: {
             homeTeam: true,
             awayTeam: true,
+            predictions: true,
           },
         },
       },
