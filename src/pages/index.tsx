@@ -1,25 +1,15 @@
 import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
-import { z } from "zod";
-import { FixtureView } from "~/components/fixture-view";
+import { GameweekCarousel } from "~/components/gameweeks-carousel";
 
 const Home: NextPage = () => {
   const gameweeks = api.gameweek.getAll.useQuery();
   return (
     <>
-      {gameweeks.data?.map((gameweek) => (
-        <div key={gameweek.number}>
-          <div>{gameweek.number}</div>
-          <ul className="space-y-20">
-            {gameweek.fixtures.map((fixture) => (
-              <li key={fixture.fixtureId}>
-                <FixtureView fixture={fixture}></FixtureView>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      <div className="w-3/4 p-20">
+        <GameweekCarousel gameweeks={gameweeks.data ?? []} />
+      </div>
     </>
   );
 };
