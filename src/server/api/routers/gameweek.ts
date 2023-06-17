@@ -1,3 +1,4 @@
+import { gameweekSchema } from "~/pages/schemas/gameweek";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const gameweekRouter = createTRPCRouter({
@@ -12,6 +13,6 @@ export const gameweekRouter = createTRPCRouter({
         },
       },
     });
-    return gameweeks;
+    return gameweeks.map((gameweek) => gameweekSchema.parse(gameweek));
   }),
 });
