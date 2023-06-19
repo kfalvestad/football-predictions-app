@@ -22,7 +22,7 @@ export function GameweekCarousel({ gameweeks }: GameweekCarouselProps) {
   };
 
   return (
-    <div className="carousel w-full">
+    <div className="carousel flex h-screen w-full overflow-y-auto">
       {gameweeks.map((gameweek, index) => (
         <div
           key={gameweek.number}
@@ -31,10 +31,10 @@ export function GameweekCarousel({ gameweeks }: GameweekCarouselProps) {
           }`}
         >
           <div className="flex flex-col items-center space-y-4">
-            <div className="flex items-center space-x-4">
+            <div className="sticky top-0 z-10 flex w-full items-center justify-center space-x-4 bg-white pb-5 shadow-sm">
               <button
                 onClick={goToPreviousGameweek}
-                className="btn-circle btn"
+                className="btn-circle btn btn border-none bg-transparent"
                 disabled={currentGameweek === 0}
               >
                 ❮
@@ -42,13 +42,13 @@ export function GameweekCarousel({ gameweeks }: GameweekCarouselProps) {
               <div>{gameweek.number}</div>
               <button
                 onClick={goToNextGameweek}
-                className="btn-circle btn"
+                className="btn-circle btn btn border-none bg-transparent"
                 disabled={currentGameweek === gameweeks.length - 1}
               >
                 ❯
               </button>
             </div>
-            <div className="w-full">
+            <div className="w-full pt-8">
               <FixturesView fixtures={gameweek.fixtures} />
             </div>
           </div>
