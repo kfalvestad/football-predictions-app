@@ -1,4 +1,8 @@
+import { signIn, signOut, useSession } from "next-auth/react";
+
 export function Sidebar() {
+  const { data: sessionData } = useSession();
+
   return (
     <>
       <div className="drawer drawer-end lg:drawer-open">
@@ -28,7 +32,14 @@ export function Sidebar() {
           <label htmlFor="my-drawer-2" className="drawer-overlay"></label>
           <ul className="menu h-full w-80 bg-base-200 p-4 text-base-content lg:w-96">
             <li>
-              <a>User</a>
+              <p
+                className="text-center text-2xl text-white"
+                onClick={
+                  sessionData ? () => void signOut() : () => void signIn()
+                }
+              >
+                {sessionData ? sessionData.user?.name : "Log in"}
+              </p>
             </li>
             <li>
               <a>Table</a>
