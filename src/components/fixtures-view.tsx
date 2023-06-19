@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { type Fixture } from "~/pages/schemas/fixture";
 
 type FixtureViewProps = {
@@ -5,6 +6,24 @@ type FixtureViewProps = {
 };
 
 export function FixtureView({ fixture }: FixtureViewProps) {
+  const [homePrediction, setHomePrediction] = useState<number | null>(null);
+  const [awayPrediction, setAwayPrediction] = useState<number | null>(null);
+
+  const handlePredictionChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setPrediction: React.Dispatch<React.SetStateAction<number | null>>
+  ) => {
+    const value = e.target.value;
+    if (value === "") {
+      setPrediction(null);
+    } else {
+      const prediction = parseInt(value);
+      if (!isNaN(prediction) && prediction >= 0 && prediction < 100) {
+        setPrediction(prediction);
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col">
       <div className="grid grid-cols-4 gap-4">
@@ -13,8 +32,10 @@ export function FixtureView({ fixture }: FixtureViewProps) {
           <input
             type="tel"
             min={0}
-            max={30}
-            className="h-10 w-16 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-center text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            max={99}
+            value={homePrediction === null ? "" : homePrediction}
+            onChange={(e) => handlePredictionChange(e, setHomePrediction)}
+            className="h-10 w-16 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-center text-sm text-gray-900 focus:outline-none  dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
             placeholder=""
           />
         </div>
@@ -22,12 +43,17 @@ export function FixtureView({ fixture }: FixtureViewProps) {
           <input
             type="tel"
             min={0}
-            max={30}
-            className="h-10 w-16 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-center text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            max={99}
+            value={awayPrediction === null ? "" : awayPrediction}
+            onChange={(e) => handlePredictionChange(e, setAwayPrediction)}
+            className="h-10 w-16 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-center text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
             placeholder=""
           />
         </div>
         <div className="flex-1 items-end">{fixture.awayTeam.name}</div>
+        {(homePrediction !== null || awayPrediction !== null) && (
+          <button className="btn mt-2 flex justify-center">Update</button>
+        )}
         <div className="col-span-4 mt-2 flex justify-center">
           {new Date(fixture.kickoffTime).toLocaleString("no-NO")}
         </div>

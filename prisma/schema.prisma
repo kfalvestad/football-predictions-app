@@ -103,7 +103,6 @@ model Gameweek {
 }
 
 model Predictions {
-    id        String  @id
     userId    String
     fixtureId Int
     homeScore Int
@@ -111,6 +110,7 @@ model Predictions {
     Fixture   Fixture @relation(fields: [fixtureId], references: [fixtureId])
     User      User    @relation(fields: [userId], references: [id])
 
+    @@id([userId, fixtureId])
     @@index([userId])
     @@index([fixtureId])
 }
