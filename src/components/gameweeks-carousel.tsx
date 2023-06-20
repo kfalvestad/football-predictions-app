@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { FixturesView } from "./fixtures-view";
 import { type Gameweek } from "~/pages/schemas/gameweek";
+import { UpdateButton } from "./update-button";
+import { set } from "date-fns";
 
 type GameweekCarouselProps = {
   gameweeks: Gameweek[];
@@ -8,6 +10,23 @@ type GameweekCarouselProps = {
 
 export function GameweekCarousel({ gameweeks }: GameweekCarouselProps) {
   const [currentGameweek, setCurrentGameweek] = useState(0);
+
+  const [updatedPredictions, setUpdatedPredictions] = useState<
+    {
+      fixture: number;
+      homePrediction: number;
+      awayPrediction: number;
+    }[]
+  >([]);
+
+  const handlePredictionUpdate = (prediction: {
+    fixture: number;
+    homePrediction: number;
+    awayPrediction: number;
+  }) => {
+    setUpdatedPredictions((prevState) => [...prevState, prediction]);
+    console.log(updatedPredictions);
+  };
 
   const goToPreviousGameweek = () => {
     if (currentGameweek > 0) {
@@ -31,10 +50,11 @@ export function GameweekCarousel({ gameweeks }: GameweekCarouselProps) {
           }`}
         >
           <div className="flex flex-col items-center space-y-4">
+            <UpdateButton updatedPredictions={updatedPredictions} />
             <div className="sticky top-0 z-10 flex w-full items-center justify-center space-x-4 bg-white pb-5 shadow-sm">
               <button
                 onClick={goToPreviousGameweek}
-                className="btn-circle btn btn border-none bg-transparent"
+                className="btn-circle btn border-none bg-transparent"
                 disabled={currentGameweek === 0}
               >
                 ❮
@@ -42,14 +62,17 @@ export function GameweekCarousel({ gameweeks }: GameweekCarouselProps) {
               <div>{gameweek.number}</div>
               <button
                 onClick={goToNextGameweek}
-                className="btn-circle btn btn border-none bg-transparent"
+                className="btn-circle btn border-none bg-transparent"
                 disabled={currentGameweek === gameweeks.length - 1}
               >
                 ❯
               </button>
             </div>
             <div className="w-full pt-8">
-              <FixturesView fixtures={gameweek.fixtures} />
+              <FixturesView
+                fixtures={gameweek.fixtures}
+                onUpdate={handlePredictionUpdate}
+              />
             </div>
           </div>
         </div>

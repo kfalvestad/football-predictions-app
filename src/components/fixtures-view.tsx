@@ -3,9 +3,14 @@ import { type Fixture } from "~/pages/schemas/fixture";
 
 type FixtureViewProps = {
   fixture: Fixture;
+  onUpdate: (prediction: {
+    fixture: number;
+    homePrediction: number;
+    awayPrediction: number;
+  }) => void;
 };
 
-export function FixtureView({ fixture }: FixtureViewProps) {
+export function FixtureView({ fixture, onUpdate }: FixtureViewProps) {
   const [homePrediction, setHomePrediction] = useState<number | null>(null);
   const [awayPrediction, setAwayPrediction] = useState<number | null>(null);
 
@@ -21,6 +26,10 @@ export function FixtureView({ fixture }: FixtureViewProps) {
       if (!isNaN(prediction) && prediction >= 0 && prediction < 100) {
         setPrediction(prediction);
       }
+    }
+
+    if (homePrediction !== null && awayPrediction !== null) {
+      onUpdate({ fixture: fixture.fixtureId, homePrediction, awayPrediction });
     }
   };
 
@@ -51,9 +60,6 @@ export function FixtureView({ fixture }: FixtureViewProps) {
           />
         </div>
         <div className="flex-1 items-end">{fixture.awayTeam.name}</div>
-        {(homePrediction !== null || awayPrediction !== null) && (
-          <button className="btn mt-2 flex justify-center">Update</button>
-        )}
         <div className="col-span-4 mt-2 flex justify-center">
           {new Date(fixture.kickoffTime).toLocaleString("no-NO")}
         </div>
@@ -64,15 +70,20 @@ export function FixtureView({ fixture }: FixtureViewProps) {
 
 type FixturesViewProps = {
   fixtures: Fixture[];
+  onUpdate: (prediction: {
+    fixture: number;
+    homePrediction: number;
+    awayPrediction: number;
+  }) => void;
 };
 
-export function FixturesView({ fixtures }: FixturesViewProps) {
+export function FixturesView({ fixtures, onUpdate }: FixturesViewProps) {
   return (
     <>
       <ul className="space-y-20">
         {fixtures.map((fixture) => (
           <li key={fixture.fixtureId}>
-            <FixtureView fixture={fixture}></FixtureView>
+            <FixtureView fixture={fixture} onUpdate={onUpdate}></FixtureView>
           </li>
         ))}
       </ul>
