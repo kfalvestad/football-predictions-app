@@ -1,11 +1,14 @@
 import { GameweekCarousel } from "~/components/gameweeks-carousel";
 import { Sidebar } from "~/components/sidebar";
 import { api } from "~/utils/api";
-import type { NextPage } from "next";
+import type { GetStaticProps, NextPage } from "next";
+import { createServerSideHelpers } from "@trpc/react-query/server";
+import { appRouter } from "~/server/api/root";
+import { prisma } from "~/server/db";
 
 const Home: NextPage = () => {
-  const gameweeks = api.gameweek.getAll.useQuery();
-  const predictions = api.prediction.getAll.useQuery();
+  const { data: gameweeks } = api.gameweek.getAll.useQuery();
+  const { data: predictions } = api.prediction.getAll.useQuery();
 
   return (
     <>
@@ -13,8 +16,8 @@ const Home: NextPage = () => {
         <div className="flex w-auto flex-1 justify-center">
           <div className="m-10">
             <GameweekCarousel
-              gameweeks={gameweeks.data ? gameweeks.data : []}
-              predictions={predictions.data ? predictions.data : []}
+              gameweeks={gameweeks ? gameweeks : []}
+              predictions={predictions ? predictions : []}
             />
           </div>
         </div>
@@ -27,3 +30,18 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+export const getStaticProps: GetStaticProps = async () => {
+  const ssg = createServerSideHelpers({
+    router: appRouter,
+    ctx: { prisma, session: null },
+  });
+
+  await ssg.gameweek.getAll.prefetch();
+
+  return {
+    props: {
+      trpcState: ssg.dehydrate(),
+    },
+  };
+};

@@ -4,6 +4,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { api } from "~/utils/api";
 
 export const gameweekRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {

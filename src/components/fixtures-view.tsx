@@ -59,7 +59,6 @@ export function FixtureView({
             type="tel"
             min={0}
             max={99}
-            /** Value is old prediction if current prediction is null */
             value={homePrediction === null ? "" : homePrediction}
             onChange={(e) => handlePredictionChange(e, setHomePrediction)}
             className="h-10 w-16 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-center text-sm text-gray-900 focus:outline-none  dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
