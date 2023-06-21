@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { teamSchema } from "./team";
-import { predictionSchema } from "./prediction";
 
 export const fixtureSchema = z.object({
   fixtureId: z.number(),
@@ -14,7 +13,6 @@ export const fixtureSchema = z.object({
   started: z.boolean(),
   played: z.boolean(),
   kickoffTime: z.string(),
-  predictions: z.array(predictionSchema).nullable(),
   open: z.boolean(),
 });
 

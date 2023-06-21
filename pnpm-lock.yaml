@@ -17,6 +17,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.59.6
   '@typescript-eslint/parser': ^5.59.6
   autoprefixer: ^10.4.14
+  csstype: ^3.0.10
   daisyui: ^3.1.1
   date-fns: ^2.30.0
   eslint: ^8.40.0
@@ -46,6 +47,7 @@ dependencies:
   '@trpc/next': 10.30.0_3dinc7w4elsplzh2qresbird3q
   '@trpc/react-query': 10.30.0_dyoq5lgkyfts7fiewto7m6sxne
   '@trpc/server': 10.30.0
+  csstype: 3.1.2
   date-fns: 2.30.0
   fpl-api: 4.0.4
   next: 13.4.5_biqbaboplfbrettd7655fr4n2y
@@ -1230,7 +1232,6 @@ packages:
 
   /csstype/3.1.2:
     resolution: {integrity: sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==}
-    dev: true
 
   /daisyui/3.1.1_nbsflw7wuoau4kvqfjfb4lghv4:
     resolution: {integrity: sha512-+SPwlCvbk/dQd40Op3jv+C8s5pL/Ix4z/U+Q8KDKnF7oXNmvDYZlZ9e2RkouoevaW/Jta4e/iLTj5ve2WBoSkw==}

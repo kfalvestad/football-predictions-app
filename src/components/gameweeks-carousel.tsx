@@ -3,12 +3,18 @@ import { FixturesView } from "./fixtures-view";
 import { type Gameweek } from "~/pages/schemas/gameweek";
 import { UpdateButton } from "./update-button";
 import { set } from "date-fns";
+import { api } from "~/utils/api";
+import type { Prediction } from "~/pages/schemas/prediction";
 
 type GameweekCarouselProps = {
   gameweeks: Gameweek[];
+  predictions: Prediction[];
 };
 
-export function GameweekCarousel({ gameweeks }: GameweekCarouselProps) {
+export function GameweekCarousel({
+  gameweeks,
+  predictions,
+}: GameweekCarouselProps) {
   const [currentGameweek, setCurrentGameweek] = useState(0);
 
   const [updatedPredictions, setUpdatedPredictions] = useState<
@@ -71,6 +77,7 @@ export function GameweekCarousel({ gameweeks }: GameweekCarouselProps) {
             <div className="w-full pt-8">
               <FixturesView
                 fixtures={gameweek.fixtures}
+                predictions={predictions}
                 onUpdate={handlePredictionUpdate}
               />
             </div>

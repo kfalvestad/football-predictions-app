@@ -1,7 +1,17 @@
 import { z } from "zod";
+import { predictionSchema } from "~/pages/schemas/prediction";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const predictionRouter = createTRPCRouter({
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    const predictions = await ctx.prisma.predictions.findMany({
+      where: {
+        userId: ctx.session.user.id,
+      },
+    });
+    return predictions.map((prediction) => predictionSchema.parse(prediction));
+  }),
+
   post: protectedProcedure
     .input(
       z.object({
