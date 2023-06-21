@@ -1,10 +1,6 @@
 import { type NextPage } from "next";
-import { signIn, signOut, useSession } from "next-auth/react";
-import Head from "next/head";
-import Link from "next/link";
 import { GameweekCarousel } from "~/components/gameweeks-carousel";
 import { Sidebar } from "~/components/sidebar";
-import { UpdateButton } from "~/components/update-button";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
@@ -25,6 +21,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-function useState<T>(arg0: never[]): [any, any] {
-  throw new Error("Function not implemented.");
-}
