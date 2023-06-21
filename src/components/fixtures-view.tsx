@@ -1,4 +1,5 @@
-import { useState } from "react";
+import _ from "lodash";
+import { memo, useState } from "react";
 import { type Fixture } from "~/pages/schemas/fixture";
 import { type Prediction } from "~/pages/schemas/prediction";
 
@@ -46,9 +47,15 @@ export function FixtureView({
         awayPrediction == oldPrediction?.awayScore
       )
     ) {
-      onUpdate({ fixture: fixture.fixtureId, homePrediction, awayPrediction });
+      debouncedUpdate({
+        fixture: fixture.fixtureId,
+        homePrediction,
+        awayPrediction,
+      });
     }
   };
+
+  const debouncedUpdate = _.debounce(onUpdate, 500);
 
   return (
     <div className="flex flex-col">

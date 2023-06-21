@@ -6,6 +6,21 @@ import { createServerSideHelpers } from "@trpc/react-query/server";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 
+export const getStaticProps: GetStaticProps = async () => {
+  const ssg = createServerSideHelpers({
+    router: appRouter,
+    ctx: { prisma, session: null },
+  });
+
+  await ssg.gameweek.getAll.prefetch();
+
+  return {
+    props: {
+      trpcState: ssg.dehydrate(),
+    },
+  };
+};
+
 const Home: NextPage = () => {
   const { data: gameweeks } = api.gameweek.getAll.useQuery();
   const { data: predictions } = api.prediction.getAll.useQuery();
@@ -30,18 +45,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-export const getStaticProps: GetStaticProps = async () => {
-  const ssg = createServerSideHelpers({
-    router: appRouter,
-    ctx: { prisma, session: null },
-  });
-
-  await ssg.gameweek.getAll.prefetch();
-
-  return {
-    props: {
-      trpcState: ssg.dehydrate(),
-    },
-  };
-};
