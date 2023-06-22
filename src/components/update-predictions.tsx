@@ -1,6 +1,6 @@
 import { api } from "~/utils/api";
 
-type UpdateButtonProps = {
+type updatePredictionsProps = {
   updatedPredictions: {
     fixture: number;
     homePrediction: number;
@@ -8,7 +8,9 @@ type UpdateButtonProps = {
   }[];
 };
 
-export function UpdateButton({ updatedPredictions }: UpdateButtonProps) {
+export function updatePredictions({
+  updatedPredictions,
+}: updatePredictionsProps) {
   const ctx = api.useContext();
 
   const mutation = api.prediction.postMany.useMutation({
@@ -27,17 +29,5 @@ export function UpdateButton({ updatedPredictions }: UpdateButtonProps) {
     },
   });
 
-  const handleClick = () => {
-    mutation.mutate(updatedPredictions);
-  };
-
-  return (
-    <button
-      onClick={handleClick}
-      className="btn mt-2 flex w-full bg-green-500 hover:bg-green-600"
-      disabled={updatedPredictions.length === 0}
-    >
-      Update predictions{" "}
-    </button>
-  );
+  mutation.mutate(updatedPredictions);
 }

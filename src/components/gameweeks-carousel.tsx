@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { FixturesView } from "./fixtures-view";
 import { type Gameweek } from "~/pages/schemas/gameweek";
-import { UpdateButton } from "./update-button";
 import { set } from "date-fns";
 import { api } from "~/utils/api";
 import type { Prediction } from "~/pages/schemas/prediction";
@@ -17,7 +16,7 @@ export function GameweekCarousel({
 }: GameweekCarouselProps) {
   const [currentGameweek, setCurrentGameweek] = useState(0);
 
-  const [updatedPredictions, setUpdatedPredictions] = useState<
+  /*  const [updatedPredictions, setUpdatedPredictions] = useState<
     {
       fixture: number;
       homePrediction: number;
@@ -27,12 +26,37 @@ export function GameweekCarousel({
 
   const handlePredictionUpdate = (prediction: {
     fixture: number;
-    homePrediction: number;
-    awayPrediction: number;
+    homePrediction: number | null;
+    awayPrediction: number | null;
   }) => {
-    setUpdatedPredictions((prevState) => [...prevState, prediction]);
-    console.log(updatedPredictions);
-  };
+    setUpdatedPredictions((prevState) => {
+      const existingIndex = prevState.findIndex(
+        (p) => p.fixture === prediction.fixture
+      );
+
+      if (existingIndex !== -1) {
+        prevState.splice(existingIndex, 1);
+      }
+
+      if (
+        prediction.homePrediction !== null &&
+        prediction.awayPrediction !== null
+      ) {
+        console.log("predictions added", updatedPredictions);
+        return [
+          ...prevState,
+          {
+            fixture: prediction.fixture,
+            homePrediction: prediction.homePrediction,
+            awayPrediction: prediction.awayPrediction,
+          },
+        ];
+      } else {
+        console.log("predictions removed?", updatedPredictions);
+        return [...prevState];
+      }
+    });
+  }; */
 
   const goToPreviousGameweek = () => {
     if (currentGameweek > 0) {
@@ -56,7 +80,6 @@ export function GameweekCarousel({
           }`}
         >
           <div className="flex flex-col items-center space-y-4">
-            <UpdateButton updatedPredictions={updatedPredictions} />
             <div className="sticky top-0 z-10 flex w-full items-center justify-center space-x-4 bg-white pb-5 shadow-sm">
               <button
                 onClick={goToPreviousGameweek}
@@ -78,7 +101,6 @@ export function GameweekCarousel({
               <FixturesView
                 fixtures={gameweek.fixtures}
                 predictions={predictions}
-                onUpdate={handlePredictionUpdate}
               />
             </div>
           </div>
