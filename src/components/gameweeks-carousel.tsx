@@ -4,6 +4,7 @@ import { type Gameweek } from "~/pages/schemas/gameweek";
 import { set } from "date-fns";
 import { api } from "~/utils/api";
 import type { Prediction } from "~/pages/schemas/prediction";
+import { LoadingPage } from "./loading";
 
 export function GameweekCarousel() {
   const [currentGameweek, setCurrentGameweek] = useState(0);
@@ -14,7 +15,7 @@ export function GameweekCarousel() {
   const { data: predictions } = api.prediction.getAll.useQuery();
 
   if (gameweeksLoading) {
-    return <div>Loading...</div>;
+    return <LoadingPage />;
   }
 
   if (!gameweeks) {
@@ -61,7 +62,7 @@ export function GameweekCarousel() {
           }`}
         >
           <div className="flex w-full flex-col space-y-4">
-            <div className="sticky top-0 z-10 flex bg-white p-5 shadow-sm">
+            <div className="sticky top-0 z-10 flex bg-white p-5 shadow-md">
               <div className="absolute md:left-10">
                 <button className="btn mt-2 flex w-full bg-orange-200 hover:bg-orange-100">
                   Update
@@ -85,7 +86,7 @@ export function GameweekCarousel() {
                 </button>
               </div>
             </div>
-            <div className="mx-auto w-1/2 pb-10">
+            <div className="mx-auto w-1/2 pb-10 pt-10">
               <FixturesView
                 fixtures={gameweek.fixtures}
                 predictions={predictions ?? []}

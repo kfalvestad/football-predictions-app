@@ -12,7 +12,7 @@ const Home: NextPage = () => {
         }
       `}</style>
       <div className="flex">
-        <div className="mb-10 flex-1 p-10">
+        <div className="h-screen flex-1 p-10">
           <GameweekCarousel />
         </div>
         <div className="w-auto">
