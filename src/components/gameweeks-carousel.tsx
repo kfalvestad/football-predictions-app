@@ -16,48 +16,6 @@ export function GameweekCarousel({
 }: GameweekCarouselProps) {
   const [currentGameweek, setCurrentGameweek] = useState(0);
 
-  /*  const [updatedPredictions, setUpdatedPredictions] = useState<
-    {
-      fixture: number;
-      homePrediction: number;
-      awayPrediction: number;
-    }[]
-  >([]);
-
-  const handlePredictionUpdate = (prediction: {
-    fixture: number;
-    homePrediction: number | null;
-    awayPrediction: number | null;
-  }) => {
-    setUpdatedPredictions((prevState) => {
-      const existingIndex = prevState.findIndex(
-        (p) => p.fixture === prediction.fixture
-      );
-
-      if (existingIndex !== -1) {
-        prevState.splice(existingIndex, 1);
-      }
-
-      if (
-        prediction.homePrediction !== null &&
-        prediction.awayPrediction !== null
-      ) {
-        console.log("predictions added", updatedPredictions);
-        return [
-          ...prevState,
-          {
-            fixture: prediction.fixture,
-            homePrediction: prediction.homePrediction,
-            awayPrediction: prediction.awayPrediction,
-          },
-        ];
-      } else {
-        console.log("predictions removed?", updatedPredictions);
-        return [...prevState];
-      }
-    });
-  }; */
-
   const goToPreviousGameweek = () => {
     if (currentGameweek > 0) {
       setCurrentGameweek(currentGameweek - 1);
