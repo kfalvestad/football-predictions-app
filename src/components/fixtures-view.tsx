@@ -46,14 +46,17 @@ export function FixtureView({
         setPrediction(prediction);
       }
     }
+  };
 
+  const updatePredictions = () => {
     if (
       !(
         homePrediction === oldPrediction?.homeScore &&
         awayPrediction === oldPrediction?.awayScore
-      )
+      ) &&
+      !(homePrediction === null && awayPrediction === null)
     ) {
-      debouncedUpdate(
+      onUpdate(
         {
           fixture: fixture.fixtureId,
           homePrediction,
@@ -77,6 +80,7 @@ export function FixtureView({
             max={99}
             value={homePrediction === null ? "" : homePrediction}
             onChange={(e) => handlePredictionChange(e, setHomePrediction)}
+            onBlur={updatePredictions}
             className="h-10 w-16 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-center text-sm text-gray-900 focus:outline-none  dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
           />
         </div>
@@ -86,6 +90,7 @@ export function FixtureView({
             min={0}
             max={99}
             value={awayPrediction === null ? "" : awayPrediction}
+            onBlur={updatePredictions}
             onChange={(e) => handlePredictionChange(e, setAwayPrediction)}
             className="h-10 w-16 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-center text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
           />
@@ -130,9 +135,6 @@ export function FixturesView({ fixtures, predictions }: FixturesViewProps) {
     Array(initializedPredictions.length).fill(false)
   );
 
-  const [predictionsToUpdate, setPredictionsToUpdate] =
-    useState<boolean>(false);
-
   const handlePredictionChange = (
     prediction: {
       fixture: number;
@@ -144,19 +146,12 @@ export function FixturesView({ fixtures, predictions }: FixturesViewProps) {
     const newPredictions = [...updatedPredictions];
     newPredictions[index] = prediction;
     setUpdatedPredictions(newPredictions);
-
-    if (predictionsToUpdate === false) {
-      setPredictionsToUpdate(true);
-    }
   };
-
-  const ctx = api.useContext();
 
   const mutation = api.prediction.postMany.useMutation({
     onSuccess: () => {
       alert("Predictions updated!");
       setUpdatedPredictions(initializedPredictions);
-      void ctx.gameweek.getAll.invalidate();
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -169,10 +164,12 @@ export function FixturesView({ fixtures, predictions }: FixturesViewProps) {
   });
 
   const handleClick = () => {
-    console.log(updatedPredictions);
     const predictionsToUpdate = updatedPredictions
       .filter((p) => {
-        if (p.homePrediction === null || p.awayPrediction === null) {
+        if (p.homePrediction === null && p.awayPrediction === null) {
+          return false;
+        } else if (p.homePrediction === null || p.awayPrediction === null) {
+          console.log("Home:", p.homePrediction, "Away:", p.awayPrediction);
           setErrorMessages((old) => {
             const newErrorMessages = [...old];
             newErrorMessages[
@@ -180,7 +177,6 @@ export function FixturesView({ fixtures, predictions }: FixturesViewProps) {
             ] = true;
             return newErrorMessages;
           });
-          return false;
         } else {
           return true;
         }
@@ -193,7 +189,6 @@ export function FixturesView({ fixtures, predictions }: FixturesViewProps) {
         };
       });
 
-    console.log(predictionsToUpdate);
     mutation.mutate(predictionsToUpdate);
   };
 
@@ -202,7 +197,9 @@ export function FixturesView({ fixtures, predictions }: FixturesViewProps) {
       <button
         onClick={handleClick}
         className="btn mt-2 flex w-full bg-green-500 hover:bg-green-600"
-        disabled={!predictionsToUpdate}
+        disabled={
+          mutation.isLoading || updatedPredictions === initializedPredictions
+        }
       >
         Update Predictions
       </button>
