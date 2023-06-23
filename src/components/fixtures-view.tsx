@@ -1,5 +1,4 @@
-import _ from "lodash";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { type Fixture } from "~/pages/schemas/fixture";
 import { type Prediction } from "~/pages/schemas/prediction";
 import { api } from "~/utils/api";
@@ -67,8 +66,6 @@ export function FixtureView({
     }
   };
 
-  const debouncedUpdate = _.debounce(onUpdate, 500);
-
   return (
     <div className="flex flex-col">
       <div className="grid grid-cols-4 gap-4">
@@ -112,9 +109,17 @@ export function FixtureView({
 type FixturesViewProps = {
   fixtures: Fixture[];
   predictions: Prediction[];
+  pc: {
+    hasPendingChanges: boolean;
+    setHasPendingChanges: Dispatch<SetStateAction<boolean>>;
+  };
 };
 
-export function FixturesView({ fixtures, predictions }: FixturesViewProps) {
+export function FixturesView({
+  fixtures,
+  predictions,
+  pc: { hasPendingChanges, setHasPendingChanges },
+}: FixturesViewProps) {
   const initializedPredictions = fixtures.map((fixture) => {
     return {
       fixture: fixture.fixtureId,
@@ -146,12 +151,17 @@ export function FixturesView({ fixtures, predictions }: FixturesViewProps) {
     const newPredictions = [...updatedPredictions];
     newPredictions[index] = prediction;
     setUpdatedPredictions(newPredictions);
+
+    if (!hasPendingChanges) {
+      setHasPendingChanges(true);
+    }
   };
 
   const mutation = api.prediction.postMany.useMutation({
     onSuccess: () => {
       alert("Predictions updated!");
       setUpdatedPredictions(initializedPredictions);
+      setHasPendingChanges(false);
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -197,9 +207,7 @@ export function FixturesView({ fixtures, predictions }: FixturesViewProps) {
       <button
         onClick={handleClick}
         className="btn mt-2 flex w-full bg-green-500 hover:bg-green-600"
-        disabled={
-          mutation.isLoading || updatedPredictions === initializedPredictions
-        }
+        disabled={mutation.isLoading || !hasPendingChanges}
       >
         Update Predictions
       </button>

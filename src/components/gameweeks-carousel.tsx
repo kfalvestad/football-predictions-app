@@ -15,15 +15,34 @@ export function GameweekCarousel({
   predictions,
 }: GameweekCarouselProps) {
   const [currentGameweek, setCurrentGameweek] = useState(0);
+  const [hasPendingChanges, setHasPendingChanges] = useState(false);
 
   const goToPreviousGameweek = () => {
     if (currentGameweek > 0) {
+      if (hasPendingChanges) {
+        if (
+          !window.confirm(
+            "You have unsaved predictions, are you sure you want to continue?"
+          )
+        ) {
+          return;
+        }
+      }
       setCurrentGameweek(currentGameweek - 1);
     }
   };
 
   const goToNextGameweek = () => {
     if (currentGameweek < gameweeks.length - 1) {
+      if (hasPendingChanges) {
+        if (
+          !window.confirm(
+            "You have unsaved predictions, are you sure you want to continue?"
+          )
+        ) {
+          return;
+        }
+      }
       setCurrentGameweek(currentGameweek + 1);
     }
   };
@@ -59,6 +78,7 @@ export function GameweekCarousel({
               <FixturesView
                 fixtures={gameweek.fixtures}
                 predictions={predictions}
+                pc={{ hasPendingChanges, setHasPendingChanges }}
               />
             </div>
           </div>
