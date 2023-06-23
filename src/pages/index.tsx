@@ -4,19 +4,16 @@ import { api } from "~/utils/api";
 import type { NextPage } from "next";
 
 const Home: NextPage = () => {
-  const { data: gameweeks } = api.gameweek.getAll.useQuery();
-  const { data: predictions } = api.prediction.getAll.useQuery();
-
   return (
     <>
+      <style>{`
+        body {
+          overflow: hidden;
+        }
+      `}</style>
       <div className="flex">
-        <div className="flex w-auto flex-1 justify-center">
-          <div className="m-10">
-            <GameweekCarousel
-              gameweeks={gameweeks ? gameweeks : []}
-              predictions={predictions ? predictions : []}
-            />
-          </div>
+        <div className="mb-10 flex-1 p-10">
+          <GameweekCarousel />
         </div>
         <div className="w-auto">
           <Sidebar />

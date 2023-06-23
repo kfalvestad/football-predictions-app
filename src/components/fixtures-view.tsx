@@ -68,8 +68,8 @@ export function FixtureView({
 
   return (
     <div className="flex flex-col">
-      <div className="grid grid-cols-4 gap-4">
-        <div className="flex-1 items-start">{fixture.homeTeam.name}</div>
+      <div className="grid grid-cols-4 items-center gap-4">
+        <div className="flex-1 text-center">{fixture.homeTeam.name}</div>
         <div className="flex flex-col items-center justify-center">
           <input
             type="tel"
@@ -92,7 +92,7 @@ export function FixtureView({
             className="h-10 w-16 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-center text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
           />
         </div>
-        <div className="flex-1 items-end">{fixture.awayTeam.name}</div>
+        <div className="flex-1 text-center">{fixture.awayTeam.name}</div>
         {errorMessage[index] && (
           <div className="col-span-4 mt-2 flex justify-center text-red-500">
             Please enter a valid prediction
@@ -204,13 +204,6 @@ export function FixturesView({
 
   return (
     <>
-      <button
-        onClick={handleClick}
-        className="btn mt-2 flex w-full bg-green-500 hover:bg-green-600"
-        disabled={mutation.isLoading || !hasPendingChanges}
-      >
-        Update Predictions
-      </button>
       <ul className="space-y-20">
         {fixtures.map((fixture) => {
           const oldPrediction = predictions.find(

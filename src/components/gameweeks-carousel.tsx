@@ -5,17 +5,21 @@ import { set } from "date-fns";
 import { api } from "~/utils/api";
 import type { Prediction } from "~/pages/schemas/prediction";
 
-type GameweekCarouselProps = {
-  gameweeks: Gameweek[];
-  predictions: Prediction[];
-};
-
-export function GameweekCarousel({
-  gameweeks,
-  predictions,
-}: GameweekCarouselProps) {
+export function GameweekCarousel() {
   const [currentGameweek, setCurrentGameweek] = useState(0);
   const [hasPendingChanges, setHasPendingChanges] = useState(false);
+
+  const { data: gameweeks, isLoading: gameweeksLoading } =
+    api.gameweek.getAll.useQuery();
+  const { data: predictions } = api.prediction.getAll.useQuery();
+
+  if (gameweeksLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!gameweeks) {
+    return <div>Something went wrong</div>;
+  }
 
   const goToPreviousGameweek = () => {
     if (currentGameweek > 0) {
@@ -48,7 +52,7 @@ export function GameweekCarousel({
   };
 
   return (
-    <div className="carousel flex h-screen w-full overflow-y-auto">
+    <div className="carousel h-screen w-full overflow-y-auto">
       {gameweeks.map((gameweek, index) => (
         <div
           key={gameweek.number}
@@ -56,28 +60,35 @@ export function GameweekCarousel({
             index === currentGameweek ? "visible" : "hidden"
           }`}
         >
-          <div className="flex flex-col items-center space-y-4">
-            <div className="sticky top-0 z-10 flex w-full items-center justify-center space-x-4 bg-white pb-5 shadow-sm">
-              <button
-                onClick={goToPreviousGameweek}
-                className="btn-circle btn border-none bg-transparent"
-                disabled={currentGameweek === 0}
-              >
-                ❮
-              </button>
-              <div>{gameweek.number}</div>
-              <button
-                onClick={goToNextGameweek}
-                className="btn-circle btn border-none bg-transparent"
-                disabled={currentGameweek === gameweeks.length - 1}
-              >
-                ❯
-              </button>
+          <div className="flex w-full flex-col space-y-4">
+            <div className="sticky top-0 z-10 flex bg-white p-5 shadow-sm">
+              <div className="absolute md:left-10">
+                <button className="btn mt-2 flex w-full bg-orange-200 hover:bg-orange-100">
+                  Update
+                </button>
+              </div>
+              <div className="mx-auto flex items-center space-x-5">
+                <button
+                  onClick={goToPreviousGameweek}
+                  className="btn-circle btn border-none bg-transparent"
+                  disabled={currentGameweek === 0}
+                >
+                  ❮
+                </button>
+                <div className="text-2xl">{gameweek.number}</div>
+                <button
+                  onClick={goToNextGameweek}
+                  className="btn-circle btn border-none bg-transparent"
+                  disabled={currentGameweek === gameweeks.length - 1}
+                >
+                  ❯
+                </button>
+              </div>
             </div>
-            <div className="w-full pt-8">
+            <div className="mx-auto w-1/2 pb-10">
               <FixturesView
                 fixtures={gameweek.fixtures}
-                predictions={predictions}
+                predictions={predictions ?? []}
                 pc={{ hasPendingChanges, setHasPendingChanges }}
               />
             </div>
