@@ -1,10 +1,7 @@
-import { gameweekSchema } from "~/pages/schemas/gameweek";
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
-import { api } from "~/utils/api";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { type RouterOutputs } from "~/utils/api";
+
+export type GammeweekWithFixtures = RouterOutputs["gameweek"]["getAll"][number];
 
 export const gameweekRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -19,6 +16,6 @@ export const gameweekRouter = createTRPCRouter({
       },
     });
 
-    return gameweeks.map((gameweek) => gameweekSchema.parse(gameweek));
+    return gameweeks;
   }),
 });

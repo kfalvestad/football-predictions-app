@@ -9,7 +9,7 @@ export const predictionRouter = createTRPCRouter({
         userId: ctx.session.user.id,
       },
     });
-    return predictions.map((prediction) => predictionSchema.parse(prediction));
+    return predictions;
   }),
 
   post: protectedProcedure

@@ -1,25 +1,7 @@
 import { GameweekCarousel } from "~/components/gameweeks-carousel";
 import { Sidebar } from "~/components/sidebar";
 import { api } from "~/utils/api";
-import type { GetStaticProps, NextPage } from "next";
-import { createServerSideHelpers } from "@trpc/react-query/server";
-import { appRouter } from "~/server/api/root";
-import { prisma } from "~/server/db";
-
-export const getStaticProps: GetStaticProps = async () => {
-  const ssg = createServerSideHelpers({
-    router: appRouter,
-    ctx: { prisma, session: null },
-  });
-
-  await ssg.gameweek.getAll.prefetch();
-
-  return {
-    props: {
-      trpcState: ssg.dehydrate(),
-    },
-  };
-};
+import type { NextPage } from "next";
 
 const Home: NextPage = () => {
   const { data: gameweeks } = api.gameweek.getAll.useQuery();
