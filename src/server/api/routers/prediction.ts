@@ -1,8 +1,20 @@
 import { z } from "zod";
-import { predictionSchema } from "~/pages/schemas/prediction";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const predictionRouter = createTRPCRouter({
+  getForGameweek: protectedProcedure
+    .input(z.number())
+    .query(async ({ ctx, input }) => {
+      const predictions = await ctx.prisma.predictions.findMany({
+        where: {
+          userId: ctx.session.user.id,
+          gameweekNumber: input,
+        },
+      });
+
+      return predictions;
+    }),
+
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const predictions = await ctx.prisma.predictions.findMany({
       where: {
