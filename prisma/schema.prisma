@@ -96,21 +96,25 @@ model Team {
 }
 
 model Gameweek {
-    number   Int       @id
-    fixtures Fixture[]
-    played   Boolean
-    deadline String
+    number      Int           @id
+    fixtures    Fixture[]
+    played      Boolean
+    deadline    String
+    Predictions Predictions[]
 }
 
 model Predictions {
-    userId    String
-    fixtureId Int
-    homeScore Int
-    awayScore Int
-    Fixture   Fixture @relation(fields: [fixtureId], references: [fixtureId])
-    User      User    @relation(fields: [userId], references: [id])
+    userId         String
+    fixtureId      Int
+    gameweekNumber Int
+    homeScore      Int
+    awayScore      Int
+    Fixture        Fixture  @relation(fields: [fixtureId], references: [fixtureId])
+    User           User     @relation(fields: [userId], references: [id])
+    Gameweek       Gameweek @relation(fields: [gameweekNumber], references: [number])
 
     @@id([userId, fixtureId])
     @@index([userId])
     @@index([fixtureId])
+    @@index([gameweekNumber])
 }
