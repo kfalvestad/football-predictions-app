@@ -101,6 +101,9 @@ model Gameweek {
     played      Boolean
     deadline    String
     Predictions Predictions[]
+    isCurrent   Boolean       @default(false)
+
+    @@index([isCurrent])
 }
 
 model Predictions {
