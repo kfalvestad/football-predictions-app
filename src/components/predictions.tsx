@@ -2,7 +2,7 @@ import { useState } from "react";
 import { api } from "~/utils/api";
 import { LoadingPage } from "./loading";
 import { GameweekCarousel } from "./gameweeks-carousel";
-import { FixturesView } from "./fixtures-view";
+import { FixturesView } from "./fixtures";
 
 export function PredictionView() {
   const [currentGameweek, setCurrentGameweek] = useState(0);

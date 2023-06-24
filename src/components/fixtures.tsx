@@ -5,7 +5,7 @@ import { api } from "~/utils/api";
 import { LoadingPage, LoadingSpinner } from "./loading";
 import { useSession } from "next-auth/react";
 
-type FixtureViewProps = {
+type FixtureProps = {
   fixture: Fixture;
   index: number;
   oldPrediction: Prediction | null;
@@ -20,13 +20,13 @@ type FixtureViewProps = {
   ) => void;
 };
 
-export function FixtureView({
+export function Fixture({
   fixture,
   index,
   oldPrediction,
   errorMessage,
   onUpdate,
-}: FixtureViewProps) {
+}: FixtureProps) {
   const [homePrediction, setHomePrediction] = useState<number | null>(
     oldPrediction?.homeScore ?? null
   );
@@ -201,7 +201,7 @@ export function FixturesView({
         {fixtures.map((fixture) => {
           return (
             <li key={fixture.fixtureId}>
-              <FixtureView
+              <Fixture
                 index={initializedPredictions.findIndex(
                   (p) => p.fixture === fixture.fixtureId
                 )}
@@ -213,7 +213,7 @@ export function FixturesView({
                   ) ?? null
                 }
                 errorMessage={errorMessages}
-              ></FixtureView>
+              />
             </li>
           );
         })}
