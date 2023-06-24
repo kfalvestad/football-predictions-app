@@ -1,15 +1,15 @@
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { type Fixture } from "~/pages/schemas/fixture";
-import { type Prediction } from "~/pages/schemas/prediction";
 import { api } from "~/utils/api";
 import { LoadingPage, LoadingSpinner } from "./loading";
 import { useSession } from "next-auth/react";
+import type { Predictions } from "@prisma/client";
 
 type FixtureProps = {
   fixture: Fixture;
   index: number;
-  oldPrediction: Prediction | null;
-  errorMessage: boolean[];
+  oldPrediction: Predictions | null;
+  errorMessage: boolean;
   onUpdate: (
     prediction: {
       fixture: number;
@@ -54,8 +54,7 @@ export function Fixture({
       !(
         homePrediction === oldPrediction?.homeScore &&
         awayPrediction === oldPrediction?.awayScore
-      ) &&
-      !(homePrediction === null && awayPrediction === null)
+      )
     ) {
       onUpdate(
         {
@@ -89,15 +88,15 @@ export function Fixture({
             min={0}
             max={99}
             value={awayPrediction === null ? "" : awayPrediction}
-            onBlur={updatePredictions}
             onChange={(e) => handlePredictionChange(e, setAwayPrediction)}
+            onBlur={updatePredictions}
             className="h-10 w-16 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-center text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
           />
         </div>
         <div className="flex-1 text-center">{fixture.awayTeam.name}</div>
-        {errorMessage[index] && (
+        {errorMessage && (
           <div className="col-span-4 mt-2 flex justify-center text-red-500">
-            Please enter a valid prediction
+            Please enter a score for both teams
           </div>
         )}
         <div className="col-span-4 mt-2 flex justify-center">
@@ -160,7 +159,7 @@ export function FixturesView({
     return <div>Something went wrong</div>;
   }
 
-  const initializedPredictions = fixtures.map((fixture) => {
+  const initializedPredictions = fixtures.map((fixture, i) => {
     return {
       fixture: fixture.fixtureId,
       homePrediction: null,
@@ -188,20 +187,22 @@ export function FixturesView({
     <>
       <ul className="space-y-20">
         {fixtures.map((fixture) => {
+          const currentIndex = initializedPredictions.findIndex(
+            (p) => p.fixture === fixture.fixtureId
+          );
+
           return (
             <li key={fixture.fixtureId}>
               <Fixture
-                index={initializedPredictions.findIndex(
-                  (p) => p.fixture === fixture.fixtureId
-                )}
                 fixture={fixture}
+                index={currentIndex}
                 onUpdate={handlePredictionChange}
                 oldPrediction={
                   oldPredictions?.data?.find(
                     (p) => p.fixtureId === fixture.fixtureId
                   ) ?? null
                 }
-                errorMessage={errorMessages}
+                errorMessage={errorMessages[currentIndex] ?? false}
               />
             </li>
           );

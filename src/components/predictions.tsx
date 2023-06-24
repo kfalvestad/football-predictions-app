@@ -3,7 +3,6 @@ import { api } from "~/utils/api";
 import { LoadingPage } from "./loading";
 import { GameweekCarousel } from "./gameweeks-carousel";
 import { FixturesView } from "./fixtures";
-import { set } from "lodash";
 
 export function PredictionView() {
   const [currentGameweek, setCurrentGameweek] = useState(0);
@@ -62,11 +61,15 @@ export function PredictionView() {
     }
   };
 
+  const ctx = api.useContext();
+
   const mutation = api.prediction.postMany.useMutation({
     onSuccess: () => {
       alert("Predictions updated!");
-      setHasPendingChanges(false);
       setUpdatedPredictions([]);
+      setHasPendingChanges(false);
+      void ctx.fixture.getGWFixtures.invalidate();
+      void ctx.prediction.getForFixtures.invalidate();
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -106,6 +109,13 @@ export function PredictionView() {
 
   return (
     <>
+      <button
+        className="btn absolute left-10 mt-2 flex bg-orange-200 hover:bg-orange-100"
+        onClick={handleClick}
+        disabled={!hasPendingChanges || mutation.isLoading}
+      >
+        Update
+      </button>
       <div className="flex flex-col">
         <div>
           <GameweekCarousel

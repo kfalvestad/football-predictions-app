@@ -18,15 +18,6 @@ export function GameweekCarousel(props: {
         >
           <div className="flex w-full flex-col space-y-4">
             <div className="sticky top-0 z-10 flex bg-white p-5 shadow-md">
-              {/*              <div className="absolute md:left-10">
-                <button
-                  className="btn mt-2 flex w-full bg-orange-200 hover:bg-orange-100"
-                  onClick={handleClick}
-                  disabled={!hasPendingChanges || mutation.isLoading}
-                >
-                  Update
-                </button>
-              </div> */}
               <div className="mx-auto flex items-center space-x-5">
                 <button
                   onClick={() => changeGW(-1)}
