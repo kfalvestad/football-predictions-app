@@ -3,6 +3,7 @@ import { api } from "~/utils/api";
 import { LoadingPage } from "./loading";
 import { GameweekCarousel } from "./gameweeks-carousel";
 import { FixturesView } from "./fixtures";
+import { set } from "lodash";
 
 export function PredictionView() {
   const [currentGameweek, setCurrentGameweek] = useState(0);
@@ -41,6 +42,23 @@ export function PredictionView() {
         }
       }
       setCurrentGameweek(currentGameweek + input);
+    }
+  };
+
+  const handleUpdates = (
+    newPredictions: {
+      fixture: number;
+      homePrediction: number | null;
+      awayPrediction: number | null;
+    }[]
+  ) => {
+    setUpdatedPredictions(newPredictions);
+    for (const p of newPredictions) {
+      if (p.homePrediction !== null && p.awayPrediction !== null) {
+        return setHasPendingChanges(true);
+      }
+
+      setHasPendingChanges(false);
     }
   };
 
@@ -99,8 +117,7 @@ export function PredictionView() {
         <div className="mx-auto w-1/2 pb-10 pt-10">
           <FixturesView
             cgw={currentGameweek + 1}
-            pending={{ hasPendingChanges, setHasPendingChanges }}
-            update={{ updatedPredictions, setUpdatedPredictions }}
+            update={{ updatedPredictions, handleUpdates }}
             em={{ errorMessages, setErrorMessages }}
           />
         </div>

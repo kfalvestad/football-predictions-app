@@ -110,25 +110,19 @@ export function Fixture({
 
 type FixturesViewProps = {
   cgw: number;
-  pending: {
-    hasPendingChanges: boolean;
-    setHasPendingChanges: Dispatch<SetStateAction<boolean>>;
-  };
   update: {
     updatedPredictions: {
       fixture: number;
       homePrediction: number | null;
       awayPrediction: number | null;
     }[];
-    setUpdatedPredictions: Dispatch<
-      SetStateAction<
-        {
-          fixture: number;
-          homePrediction: number | null;
-          awayPrediction: number | null;
-        }[]
-      >
-    >;
+    handleUpdates: (
+      newPredictions: {
+        fixture: number;
+        homePrediction: number | null;
+        awayPrediction: number | null;
+      }[]
+    ) => void;
   };
   em: {
     errorMessages: boolean[];
@@ -138,8 +132,7 @@ type FixturesViewProps = {
 
 export function FixturesView({
   cgw,
-  pending: { hasPendingChanges, setHasPendingChanges },
-  update: { updatedPredictions, setUpdatedPredictions },
+  update: { updatedPredictions, handleUpdates },
   em: { errorMessages, setErrorMessages },
 }: FixturesViewProps) {
   const session = useSession();
@@ -175,7 +168,7 @@ export function FixturesView({
     };
   });
 
-  setUpdatedPredictions(initializedPredictions);
+  handleUpdates(initializedPredictions);
   setErrorMessages(Array(initializedPredictions.length).fill(false));
 
   const handlePredictionChange = (
@@ -188,11 +181,7 @@ export function FixturesView({
   ) => {
     const newPredictions = [...updatedPredictions];
     newPredictions[index] = prediction;
-    setUpdatedPredictions(newPredictions);
-
-    if (!hasPendingChanges) {
-      setHasPendingChanges(true);
-    }
+    handleUpdates(newPredictions);
   };
 
   return (
