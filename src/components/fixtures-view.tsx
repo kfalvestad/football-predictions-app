@@ -109,13 +109,12 @@ export function FixtureView({
 }
 
 type FixturesViewProps = {
-  gw: number;
-  predictions: Prediction[];
-  pc: {
+  cgw: number;
+  pending: {
     hasPendingChanges: boolean;
     setHasPendingChanges: Dispatch<SetStateAction<boolean>>;
   };
-  up: {
+  update: {
     updatedPredictions: {
       fixture: number;
       homePrediction: number | null;
@@ -138,15 +137,15 @@ type FixturesViewProps = {
 };
 
 export function FixturesView({
-  gw,
-  pc: { hasPendingChanges, setHasPendingChanges },
-  up: { updatedPredictions, setUpdatedPredictions },
+  cgw,
+  pending: { hasPendingChanges, setHasPendingChanges },
+  update: { updatedPredictions, setUpdatedPredictions },
   em: { errorMessages, setErrorMessages },
 }: FixturesViewProps) {
   const session = useSession();
 
   const { data: fixtures, isLoading: fixturesLoading } =
-    api.fixture.getGWFixtures.useQuery(gw);
+    api.fixture.getGWFixtures.useQuery(cgw);
 
   if (fixturesLoading) {
     return <LoadingPage />;
