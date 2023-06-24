@@ -8,9 +8,7 @@ type updatePredictionsProps = {
   }[];
 };
 
-export function updatePredictions({
-  updatedPredictions,
-}: updatePredictionsProps) {
+export function UpdateButton({ updatedPredictions }: updatePredictionsProps) {
   const ctx = api.useContext();
 
   const mutation = api.prediction.postMany.useMutation({

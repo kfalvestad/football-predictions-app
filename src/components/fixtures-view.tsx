@@ -1,7 +1,9 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { type Fixture } from "~/pages/schemas/fixture";
 import { type Prediction } from "~/pages/schemas/prediction";
 import { api } from "~/utils/api";
+import { LoadingPage, LoadingSpinner } from "./loading";
+import { useSession } from "next-auth/react";
 
 type FixtureViewProps = {
   fixture: Fixture;
@@ -107,19 +109,65 @@ export function FixtureView({
 }
 
 type FixturesViewProps = {
-  fixtures: Fixture[];
+  gw: number;
   predictions: Prediction[];
   pc: {
     hasPendingChanges: boolean;
     setHasPendingChanges: Dispatch<SetStateAction<boolean>>;
   };
+  up: {
+    updatedPredictions: {
+      fixture: number;
+      homePrediction: number | null;
+      awayPrediction: number | null;
+    }[];
+    setUpdatedPredictions: Dispatch<
+      SetStateAction<
+        {
+          fixture: number;
+          homePrediction: number | null;
+          awayPrediction: number | null;
+        }[]
+      >
+    >;
+  };
+  em: {
+    errorMessages: boolean[];
+    setErrorMessages: Dispatch<SetStateAction<boolean[]>>;
+  };
 };
 
 export function FixturesView({
-  fixtures,
-  predictions,
+  gw,
   pc: { hasPendingChanges, setHasPendingChanges },
+  up: { updatedPredictions, setUpdatedPredictions },
+  em: { errorMessages, setErrorMessages },
 }: FixturesViewProps) {
+  const session = useSession();
+
+  const { data: fixtures, isLoading: fixturesLoading } =
+    api.fixture.getGWFixtures.useQuery(gw);
+
+  if (fixturesLoading) {
+    return <LoadingPage />;
+  }
+
+  if (!fixtures) {
+    return <div>Something went wrong</div>;
+  }
+
+  const fixIds = fixtures.map((f) => f.fixtureId);
+
+  const oldPredictions = session
+    ? api.prediction.getForFixtures.useQuery(fixIds)
+    : null;
+
+  if (session && oldPredictions?.isLoading) {
+    return <LoadingSpinner />;
+  } else if (session && oldPredictions?.error) {
+    return <div>Something went wrong</div>;
+  }
+
   const initializedPredictions = fixtures.map((fixture) => {
     return {
       fixture: fixture.fixtureId,
@@ -128,17 +176,8 @@ export function FixturesView({
     };
   });
 
-  const [updatedPredictions, setUpdatedPredictions] = useState<
-    {
-      fixture: number;
-      homePrediction: number | null;
-      awayPrediction: number | null;
-    }[]
-  >(initializedPredictions);
-
-  const [errorMessages, setErrorMessages] = useState<boolean[]>(
-    Array(initializedPredictions.length).fill(false)
-  );
+  setUpdatedPredictions(initializedPredictions);
+  setErrorMessages(Array(initializedPredictions.length).fill(false));
 
   const handlePredictionChange = (
     prediction: {
@@ -157,59 +196,10 @@ export function FixturesView({
     }
   };
 
-  const mutation = api.prediction.postMany.useMutation({
-    onSuccess: () => {
-      alert("Predictions updated!");
-      setUpdatedPredictions(initializedPredictions);
-      setHasPendingChanges(false);
-    },
-    onError: (e) => {
-      const errorMessage = e.data?.zodError?.fieldErrors.content;
-      if (errorMessage && errorMessage[0]) {
-        alert(errorMessage[0]);
-      } else {
-        alert("Failed to post, please try again later");
-      }
-    },
-  });
-
-  const handleClick = () => {
-    const predictionsToUpdate = updatedPredictions
-      .filter((p) => {
-        if (p.homePrediction === null && p.awayPrediction === null) {
-          return false;
-        } else if (p.homePrediction === null || p.awayPrediction === null) {
-          console.log("Home:", p.homePrediction, "Away:", p.awayPrediction);
-          setErrorMessages((old) => {
-            const newErrorMessages = [...old];
-            newErrorMessages[
-              initializedPredictions.findIndex((i) => i.fixture === p.fixture)
-            ] = true;
-            return newErrorMessages;
-          });
-        } else {
-          return true;
-        }
-      })
-      .map((p) => {
-        return {
-          fixture: p.fixture,
-          homePrediction: p.homePrediction as number,
-          awayPrediction: p.awayPrediction as number,
-        };
-      });
-
-    mutation.mutate(predictionsToUpdate);
-  };
-
   return (
     <>
       <ul className="space-y-20">
         {fixtures.map((fixture) => {
-          const oldPrediction = predictions.find(
-            (p) => p.fixtureId === fixture.fixtureId
-          );
-
           return (
             <li key={fixture.fixtureId}>
               <FixtureView
@@ -218,7 +208,11 @@ export function FixturesView({
                 )}
                 fixture={fixture}
                 onUpdate={handlePredictionChange}
-                oldPrediction={oldPrediction ? oldPrediction : null}
+                oldPrediction={
+                  oldPredictions?.data?.find(
+                    (p) => p.fixtureId === fixture.fixtureId
+                  ) ?? null
+                }
                 errorMessage={errorMessages}
               ></FixtureView>
             </li>
