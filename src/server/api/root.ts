@@ -10,7 +10,6 @@ import { fixtureRouter } from "./routers/fixture";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  example: exampleRouter,
   gameweek: gameweekRouter,
   prediction: predictionRouter,
   fixture: fixtureRouter,
