@@ -1,62 +1,12 @@
-import { useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { FixturesView } from "./fixtures-view";
 import { api } from "~/utils/api";
-import { LoadingPage } from "./loading";
+import { LoadingSpinner } from "./loading";
 
-export function GameweekCarousel() {
-  const [currentGameweek, setCurrentGameweek] = useState(0);
-  const [hasPendingChanges, setHasPendingChanges] = useState(false);
-  const [updatedPredictions, setUpdatedPredictions] = useState<
-    {
-      fixture: number;
-      homePrediction: number | null;
-      awayPrediction: number | null;
-    }[]
-  >([]);
-  const [errorMessages, setErrorMessages] = useState<boolean[]>([]);
-
-  const { data: gameweeks, isLoading: gameweeksLoading } =
-    api.gameweek.getAll.useQuery();
-  const { data: predictions } = api.prediction.getAll.useQuery();
-
-  if (gameweeksLoading) {
-    return <LoadingPage />;
-  }
-
-  if (!gameweeks) {
-    return <div>Something went wrong</div>;
-  }
-
-  const goToPreviousGameweek = () => {
-    if (currentGameweek > 0) {
-      if (hasPendingChanges) {
-        if (
-          !window.confirm(
-            "You have unsaved predictions, are you sure you want to continue?"
-          )
-        ) {
-          return;
-        }
-      }
-      setCurrentGameweek(currentGameweek - 1);
-    }
-  };
-
-  const goToNextGameweek = () => {
-    if (currentGameweek < gameweeks.length - 1) {
-      if (hasPendingChanges) {
-        if (
-          !window.confirm(
-            "You have unsaved predictions, are you sure you want to continue?"
-          )
-        ) {
-          return;
-        }
-      }
-      setCurrentGameweek(currentGameweek + 1);
-    }
-  };
-
+export function GameweekCarousel(props: {
+  gw: number;
+  changeGW: (input: number) => void;
+}) {
   const mutation = api.prediction.postMany.useMutation({
     onSuccess: () => {
       alert("Predictions updated!");
@@ -105,7 +55,7 @@ export function GameweekCarousel() {
         <div
           key={gameweek.number}
           className={`carousel-item relative w-full ${
-            index === currentGameweek ? "visible" : "hidden"
+            index === gw ? "visible" : "hidden"
           }`}
         >
           <div className="flex w-full flex-col space-y-4">

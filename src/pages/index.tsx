@@ -1,7 +1,6 @@
-import { GameweekCarousel } from "~/components/gameweeks-carousel";
 import { Sidebar } from "~/components/sidebar";
-import { api } from "~/utils/api";
 import type { NextPage } from "next";
+import { PredictionView } from "~/components/predictions";
 
 const Home: NextPage = () => {
   return (
@@ -11,9 +10,10 @@ const Home: NextPage = () => {
           overflow: hidden;
         }
       `}</style>
+
       <div className="flex">
         <div className="h-screen flex-1 p-10">
-          <GameweekCarousel />
+          <PredictionView />
         </div>
         <div className="w-auto">
           <Sidebar />
