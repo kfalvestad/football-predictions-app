@@ -8,7 +8,7 @@ export function GameweekCarousel(props: {
   const { gameweeks, cgw, changeGW } = props;
 
   return (
-    <div className="carousel h-screen w-full overflow-y-auto">
+    <div className="carousel w-full">
       {gameweeks.map((gameweek, index) => (
         <div
           key={gameweek.number}

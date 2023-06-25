@@ -1,5 +1,10 @@
+import { useSession } from "next-auth/react";
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { type RouterOutputs } from "~/utils/api";
 
 export type FixtureWithTeams =
@@ -19,6 +24,51 @@ export const fixtureRouter = createTRPCRouter({
         },
       });
 
-      return fixtures;
+      const fixturesWithPredictions = fixtures.map((f) => {
+        const prediction = null;
+
+        return {
+          ...f,
+          prediction,
+        };
+      });
+
+      return fixturesWithPredictions;
+    }),
+
+  getGWFixturesWithPredictions: protectedProcedure
+    .input(z.number())
+    .query(async ({ ctx, input }) => {
+      const fixtures = await ctx.prisma.fixture.findMany({
+        where: {
+          gameweekNumber: input,
+        },
+        include: {
+          homeTeam: true,
+          awayTeam: true,
+        },
+      });
+
+      const fixIds = fixtures.map((f) => f.fixtureId);
+
+      const predictions = await ctx.prisma.predictions.findMany({
+        where: {
+          userId: ctx.session.user.id,
+          fixtureId: {
+            in: fixIds,
+          },
+        },
+      });
+
+      const fixturesWithPredictions = fixtures.map((f) => {
+        const prediction = predictions.find((p) => p.fixtureId === f.fixtureId);
+
+        return {
+          ...f,
+          prediction,
+        };
+      });
+
+      return fixturesWithPredictions;
     }),
 });

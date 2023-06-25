@@ -1,7 +1,7 @@
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { type Fixture } from "~/pages/schemas/fixture";
 import { api } from "~/utils/api";
-import { LoadingPage, LoadingSpinner } from "./loading";
+import { LoadingPage } from "./loading";
 import { useSession } from "next-auth/react";
 import type { Predictions } from "@prisma/client";
 
@@ -147,19 +147,7 @@ export function FixturesView({
     return <div>Something went wrong</div>;
   }
 
-  const fixIds = fixtures.map((f) => f.fixtureId);
-
-  const oldPredictions = session
-    ? api.prediction.getForFixtures.useQuery(fixIds)
-    : null;
-
-  if (session && oldPredictions?.isLoading) {
-    return <LoadingSpinner />;
-  } else if (session && oldPredictions?.error) {
-    return <div>Something went wrong</div>;
-  }
-
-  const initializedPredictions = fixtures.map((fixture, i) => {
+  const initializedPredictions = fixtures.map((fixture) => {
     return {
       fixture: fixture.fixtureId,
       homePrediction: null,
@@ -167,8 +155,10 @@ export function FixturesView({
     };
   });
 
-  handleUpdates(initializedPredictions);
-  setErrorMessages(Array(initializedPredictions.length).fill(false));
+  if (updatedPredictions.length === 0) {
+    handleUpdates(initializedPredictions);
+    setErrorMessages(Array(initializedPredictions.length).fill(false));
+  }
 
   const handlePredictionChange = (
     prediction: {
@@ -184,7 +174,7 @@ export function FixturesView({
   };
 
   return (
-    <>
+    <div className="mx-auto w-1/2">
       <ul className="space-y-20">
         {fixtures.map((fixture) => {
           const currentIndex = initializedPredictions.findIndex(
@@ -197,17 +187,13 @@ export function FixturesView({
                 fixture={fixture}
                 index={currentIndex}
                 onUpdate={handlePredictionChange}
-                oldPrediction={
-                  oldPredictions?.data?.find(
-                    (p) => p.fixtureId === fixture.fixtureId
-                  ) ?? null
-                }
+                oldPrediction={null}
                 errorMessage={errorMessages[currentIndex] ?? false}
               />
             </li>
           );
         })}
       </ul>
-    </>
+    </div>
   );
 }

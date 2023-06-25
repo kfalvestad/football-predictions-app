@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { LoadingPage } from "./loading";
 import { GameweekCarousel } from "./gameweeks-carousel";
 import { FixturesView } from "./fixtures";
 
 export function PredictionView() {
-  const [currentGameweek, setCurrentGameweek] = useState(0);
+  const [currentGameweek, setCurrentGameweek] = useState(-1);
   const [hasPendingChanges, setHasPendingChanges] = useState(false);
   const [updatedPredictions, setUpdatedPredictions] = useState<
     {
@@ -15,51 +15,6 @@ export function PredictionView() {
     }[]
   >([]);
   const [errorMessages, setErrorMessages] = useState<boolean[]>([]);
-
-  const { data: gameweeks, isLoading: gameweeksLoading } =
-    api.gameweek.getAll.useQuery();
-
-  if (gameweeksLoading) {
-    return <LoadingPage />;
-  }
-
-  if (!gameweeks) {
-    return <div>Something went wrong</div>;
-  }
-
-  setCurrentGameweek(gameweeks.find((gw) => gw.isCurrent)?.number || 0);
-
-  const handleGWChange = (input: number) => {
-    if (currentGameweek > 0 && currentGameweek < gameweeks.length - 1) {
-      if (hasPendingChanges) {
-        if (
-          !window.confirm(
-            "You have unsaved predictions, are you sure you want to continue?"
-          )
-        ) {
-          return;
-        }
-      }
-      setCurrentGameweek(currentGameweek + input);
-    }
-  };
-
-  const handleUpdates = (
-    newPredictions: {
-      fixture: number;
-      homePrediction: number | null;
-      awayPrediction: number | null;
-    }[]
-  ) => {
-    setUpdatedPredictions(newPredictions);
-    for (const p of newPredictions) {
-      if (p.homePrediction !== null && p.awayPrediction !== null) {
-        return setHasPendingChanges(true);
-      }
-
-      setHasPendingChanges(false);
-    }
-  };
 
   const ctx = api.useContext();
 
@@ -81,6 +36,62 @@ export function PredictionView() {
     },
   });
 
+  const { data: gameweeks, isLoading: gameweeksLoading } =
+    api.gameweek.getAll.useQuery();
+
+  useEffect(() => {
+    setCurrentGameweek(
+      (gameweeks?.find((gw) => gw.isCurrent)?.number as number) - 1 || 0
+    );
+  }, [gameweeks]);
+
+  if (gameweeksLoading) {
+    return <LoadingPage />;
+  }
+
+  if (!gameweeks) {
+    return <div>Something went wrong</div>;
+  }
+
+  const handleGWChange = (input: number) => {
+    if (
+      (currentGameweek === 0 && input === -1) ||
+      (currentGameweek === gameweeks.length - 1 && input === 1)
+    ) {
+      return;
+    }
+
+    if (hasPendingChanges) {
+      if (
+        window.confirm(
+          "You have unsaved predictions, do you want to save changes?"
+        )
+      ) {
+        handleClick();
+      } else {
+        return;
+      }
+    }
+
+    setCurrentGameweek(currentGameweek + input);
+  };
+
+  const handleUpdates = (
+    newPredictions: {
+      fixture: number;
+      homePrediction: number | null;
+      awayPrediction: number | null;
+    }[]
+  ) => {
+    setUpdatedPredictions(newPredictions);
+
+    const hasUpdates = newPredictions.some(
+      (p) => p.homePrediction !== null && p.awayPrediction !== null
+    );
+
+    setHasPendingChanges(hasUpdates);
+  };
+
   const handleClick = () => {
     const predictionsToUpdate = updatedPredictions
       .filter((p, i) => {
@@ -92,6 +103,7 @@ export function PredictionView() {
             newErrorMessages[i] = true;
             return newErrorMessages;
           });
+          return false;
         } else {
           return true;
         }
@@ -110,7 +122,7 @@ export function PredictionView() {
   return (
     <>
       <button
-        className="btn absolute left-10 mt-2 flex bg-orange-200 hover:bg-orange-100"
+        className="btn absolute left-10 top-32 flex bg-orange-200 hover:bg-orange-100"
         onClick={handleClick}
         disabled={!hasPendingChanges || mutation.isLoading}
       >
@@ -124,7 +136,7 @@ export function PredictionView() {
             changeGW={handleGWChange}
           />
         </div>
-        <div className="mx-auto w-1/2 pb-10 pt-10">
+        <div className="h-screen w-full overflow-y-auto pb-10 pt-10">
           <FixturesView
             cgw={currentGameweek + 1}
             update={{ updatedPredictions, handleUpdates }}
