@@ -125,39 +125,41 @@ export function PredictionView() {
   return (
     <>
       <div className="flex flex-col ">
-        <div className="flex w-full items-center justify-between pb-8 pl-24 pr-24 pt-8 shadow-md">
+        <div className="flex w-full items-center justify-between pb-8 pl-28 pr-28 pt-8 shadow-md">
           <div>
-            {session && (
-              <button
-                className="btn bg-orange-200 hover:bg-orange-100"
-                onClick={handleClick}
-                disabled={!hasPendingChanges || mutation.isLoading}
-              >
-                Update
-              </button>
-            )}
+            <button
+              className={`btn bg-orange-200 hover:bg-orange-100 ${
+                !session ? "invisible" : ""
+              }`}
+              onClick={handleClick}
+              disabled={!hasPendingChanges || mutation.isLoading}
+            >
+              Update
+            </button>
           </div>
-          <div>
+          <div className="">
             <GameweekCarousel
               gameweeks={gameweeks}
               selectedGW={selectedGameweek}
               changeGW={handleGWChange}
             />
           </div>
-          {currentGW && (
-            <div>
-              <span
-                className="hover:cursor-pointer hover:underline"
-                onClick={() =>
-                  selectedGameweek !== currentGW - 1
-                    ? setSelectedGameweek(currentGW - 1)
-                    : null
-                }
-              >
-                Go to current
-              </span>
-            </div>
-          )}
+          <div className="">
+            <span
+              className={`hover:cursor-pointer hover:underline ${
+                !currentGW || selectedGameweek === currentGW - 1
+                  ? "invisible"
+                  : ""
+              }`}
+              onClick={() =>
+                currentGW && selectedGameweek !== currentGW - 1
+                  ? setSelectedGameweek(currentGW - 1)
+                  : null
+              }
+            >
+              Go to current
+            </span>
+          </div>
         </div>
         <div className="h-screen overflow-y-auto p-10 pb-40">
           <FixturesView
