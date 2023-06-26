@@ -3,8 +3,11 @@ import { api } from "~/utils/api";
 import { LoadingPage } from "./loading";
 import { GameweekCarousel } from "./gameweeks-carousel";
 import { FixturesView } from "./fixtures";
+import { useSession } from "next-auth/react";
 
 export function PredictionView() {
+  const { data: session } = useSession();
+
   const [selectedGameweek, setSelectedGameweek] = useState(-1);
   const [hasPendingChanges, setHasPendingChanges] = useState(false);
   const [updatedPredictions, setUpdatedPredictions] = useState<
@@ -124,13 +127,15 @@ export function PredictionView() {
       <div className="flex flex-col ">
         <div className="flex w-full items-center justify-between pb-8 pl-24 pr-24 pt-8 shadow-md">
           <div>
-            <button
-              className="btn bg-orange-200 hover:bg-orange-100"
-              onClick={handleClick}
-              disabled={!hasPendingChanges || mutation.isLoading}
-            >
-              Update
-            </button>
+            {session && (
+              <button
+                className="btn bg-orange-200 hover:bg-orange-100"
+                onClick={handleClick}
+                disabled={!hasPendingChanges || mutation.isLoading}
+              >
+                Update
+              </button>
+            )}
           </div>
           <div>
             <GameweekCarousel
@@ -154,7 +159,7 @@ export function PredictionView() {
             </div>
           )}
         </div>
-        <div className="h-screen overflow-y-auto p-10">
+        <div className="h-screen overflow-y-auto p-10 pb-40">
           <FixturesView
             selectedGW={selectedGameweek + 1}
             update={{ updatedPredictions, handleUpdates }}
