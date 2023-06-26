@@ -27,7 +27,7 @@ export function PredictionView() {
       setUpdatedPredictions([]);
       setHasPendingChanges(false);
       void ctx.fixture.getGWFixtures.invalidate();
-      void ctx.prediction.getForFixtures.invalidate();
+      void ctx.fixture.getGWFixturesWithPredictions.invalidate();
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors.content;
