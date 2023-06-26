@@ -108,7 +108,7 @@ export function Fixture({
 }
 
 type FixturesViewProps = {
-  cgw: number;
+  selectedGW: number;
   update: {
     updatedPredictions: {
       fixture: number;
@@ -130,14 +130,14 @@ type FixturesViewProps = {
 };
 
 export function FixturesView({
-  cgw,
+  selectedGW: gw,
   update: { updatedPredictions, handleUpdates },
   em: { errorMessages, setErrorMessages },
 }: FixturesViewProps) {
   const session = useSession();
 
   const { data: fixtures, isLoading: fixturesLoading } =
-    api.fixture.getGWFixtures.useQuery(cgw);
+    api.fixture.getGWFixtures.useQuery(gw);
 
   if (fixturesLoading) {
     return <LoadingPage />;

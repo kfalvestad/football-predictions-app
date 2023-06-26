@@ -2,10 +2,10 @@ import type { Gameweek } from "@prisma/client";
 
 export function GameweekCarousel(props: {
   gameweeks: Gameweek[];
-  cgw: number;
+  selectedGW: number;
   changeGW: (input: number) => void;
 }) {
-  const { gameweeks, cgw, changeGW } = props;
+  const { gameweeks, selectedGW: gw, changeGW } = props;
 
   return (
     <div className="carousel w-full">
@@ -13,7 +13,7 @@ export function GameweekCarousel(props: {
         <div
           key={gameweek.number}
           className={`carousel-item relative w-full ${
-            index === cgw ? "visible" : "hidden"
+            index === gw ? "visible" : "hidden"
           }`}
         >
           <div className="flex w-full flex-col space-y-4">
@@ -22,7 +22,7 @@ export function GameweekCarousel(props: {
                 <button
                   onClick={() => changeGW(-1)}
                   className="btn-circle btn border-none bg-transparent"
-                  disabled={cgw === 0}
+                  disabled={gw === 0}
                 >
                   ❮
                 </button>
@@ -36,7 +36,7 @@ export function GameweekCarousel(props: {
                 <button
                   onClick={() => changeGW(1)}
                   className="btn-circle btn border-none bg-transparent"
-                  disabled={cgw === gameweeks.length - 1}
+                  disabled={gw === gameweeks.length - 1}
                 >
                   ❯
                 </button>

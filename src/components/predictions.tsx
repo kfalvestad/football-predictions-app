@@ -39,11 +39,11 @@ export function PredictionView() {
   const { data: gameweeks, isLoading: gameweeksLoading } =
     api.gameweek.getAll.useQuery();
 
+  const currentGW = gameweeks?.find((gw) => gw.isCurrent)?.number;
+
   useEffect(() => {
-    setSelectedGameweek(
-      (gameweeks?.find((gw) => gw.isCurrent)?.number as number) - 1 || 0
-    );
-  }, [gameweeks]);
+    setSelectedGameweek((currentGW as number) - 1 || 0);
+  }, [currentGW]);
 
   if (gameweeksLoading) {
     return <LoadingPage />;
@@ -122,7 +122,7 @@ export function PredictionView() {
   return (
     <>
       <div className="flex flex-col ">
-        <div className="flex w-full items-center justify-around pb-8 pl-10 pr-10 pt-8 shadow-md">
+        <div className="flex w-full items-center justify-between pb-8 pl-24 pr-24 pt-8 shadow-md">
           <div>
             <button
               className="btn bg-orange-200 hover:bg-orange-100"
@@ -135,17 +135,28 @@ export function PredictionView() {
           <div>
             <GameweekCarousel
               gameweeks={gameweeks}
-              cgw={selectedGameweek}
+              selectedGW={selectedGameweek}
               changeGW={handleGWChange}
             />
           </div>
-          <div>
-            <span onClick={}>Go to current</span>
-          </div>
+          {currentGW && (
+            <div>
+              <span
+                className="hover:cursor-pointer hover:underline"
+                onClick={() =>
+                  selectedGameweek !== currentGW - 1
+                    ? setSelectedGameweek(currentGW - 1)
+                    : null
+                }
+              >
+                Go to current
+              </span>
+            </div>
+          )}
         </div>
         <div className="h-screen overflow-y-auto p-10">
           <FixturesView
-            cgw={selectedGameweek + 1}
+            selectedGW={selectedGameweek + 1}
             update={{ updatedPredictions, handleUpdates }}
             em={{ errorMessages, setErrorMessages }}
           />
