@@ -9,7 +9,7 @@ type FixtureProps = {
   fixture: Fixture;
   index: number;
   oldPrediction: Predictions | null;
-  errorMessage: boolean;
+  em: { errorMessage: boolean; hideErrorMessage: (index: number) => void };
   onUpdate: (
     prediction: {
       fixture: number;
@@ -24,7 +24,7 @@ export function Fixture({
   fixture,
   index,
   oldPrediction,
-  errorMessage,
+  em: { errorMessage, hideErrorMessage },
   onUpdate,
 }: FixtureProps) {
   const { data: session } = useSession();
@@ -88,6 +88,9 @@ export function Fixture({
                   value={homePrediction === null ? "" : homePrediction}
                   onChange={(e) => handlePredictionChange(e, setHomePrediction)}
                   onBlur={updatePredictions}
+                  onFocus={
+                    errorMessage ? () => hideErrorMessage(index) : undefined
+                  }
                   className="h-10 w-14 rounded-xl border-black bg-slate-300 p-2.5 text-center text-lg text-gray-900 hover:border-2 focus:border-2 focus:outline-none"
                 />
                 <input
@@ -97,6 +100,9 @@ export function Fixture({
                   value={awayPrediction === null ? "" : awayPrediction}
                   onChange={(e) => handlePredictionChange(e, setAwayPrediction)}
                   onBlur={updatePredictions}
+                  onFocus={
+                    errorMessage ? () => hideErrorMessage(index) : undefined
+                  }
                   className="h-10 w-14 rounded-xl border-black bg-slate-300 p-2.5 text-center text-lg text-gray-900 hover:border-2 focus:border-2 focus:outline-none"
                 />
               </>
@@ -158,8 +164,11 @@ export function FixturesView({
   update: { updatedPredictions, handleUpdates },
   em: { errorMessages, setErrorMessages },
 }: FixturesViewProps) {
-  const { data: fixtures, isLoading: fixturesLoading } =
-    api.fixture.getGWFixtures.useQuery(gw);
+  const { data: session } = useSession();
+
+  const { data: fixtures, isLoading: fixturesLoading } = session
+    ? api.fixture.getGWFixturesWithPredictions.useQuery(gw)
+    : api.fixture.getGWFixtures.useQuery(gw);
 
   if (fixturesLoading) {
     return <LoadingPage />;
@@ -179,8 +188,17 @@ export function FixturesView({
 
   if (updatedPredictions.length === 0) {
     handleUpdates(initializedPredictions);
+  }
+
+  if (errorMessages.length === 0) {
     setErrorMessages(Array(initializedPredictions.length).fill(false));
   }
+
+  const hideErrorMessage = (index: number) => {
+    const newErrorMessages = [...errorMessages];
+    newErrorMessages[index] = false;
+    setErrorMessages(newErrorMessages);
+  };
 
   const handlePredictionChange = (
     prediction: {
@@ -209,8 +227,11 @@ export function FixturesView({
                 fixture={fixture}
                 index={currentIndex}
                 onUpdate={handlePredictionChange}
-                oldPrediction={null}
-                errorMessage={errorMessages[currentIndex] ?? false}
+                oldPrediction={fixture.prediction ?? null}
+                em={{
+                  errorMessage: errorMessages[currentIndex] ?? false,
+                  hideErrorMessage,
+                }}
               />
             </li>
           );
