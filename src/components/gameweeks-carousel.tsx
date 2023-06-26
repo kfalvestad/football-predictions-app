@@ -17,7 +17,7 @@ export function GameweekCarousel(props: {
           }`}
         >
           <div className="flex w-full flex-col space-y-4">
-            <div className="sticky top-0 z-10 flex bg-white p-5 shadow-md">
+            <div>
               <div className="mx-auto flex items-center space-x-5">
                 <button
                   onClick={() => changeGW(-1)}

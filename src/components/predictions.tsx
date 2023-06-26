@@ -5,7 +5,7 @@ import { GameweekCarousel } from "./gameweeks-carousel";
 import { FixturesView } from "./fixtures";
 
 export function PredictionView() {
-  const [currentGameweek, setCurrentGameweek] = useState(-1);
+  const [selectedGameweek, setSelectedGameweek] = useState(-1);
   const [hasPendingChanges, setHasPendingChanges] = useState(false);
   const [updatedPredictions, setUpdatedPredictions] = useState<
     {
@@ -40,7 +40,7 @@ export function PredictionView() {
     api.gameweek.getAll.useQuery();
 
   useEffect(() => {
-    setCurrentGameweek(
+    setSelectedGameweek(
       (gameweeks?.find((gw) => gw.isCurrent)?.number as number) - 1 || 0
     );
   }, [gameweeks]);
@@ -55,8 +55,8 @@ export function PredictionView() {
 
   const handleGWChange = (input: number) => {
     if (
-      (currentGameweek === 0 && input === -1) ||
-      (currentGameweek === gameweeks.length - 1 && input === 1)
+      (selectedGameweek === 0 && input === -1) ||
+      (selectedGameweek === gameweeks.length - 1 && input === 1)
     ) {
       return;
     }
@@ -73,7 +73,7 @@ export function PredictionView() {
       }
     }
 
-    setCurrentGameweek(currentGameweek + input);
+    setSelectedGameweek(selectedGameweek + input);
   };
 
   const handleUpdates = (
@@ -121,24 +121,31 @@ export function PredictionView() {
 
   return (
     <>
-      <button
-        className="btn absolute left-10 top-32 flex bg-orange-200 hover:bg-orange-100"
-        onClick={handleClick}
-        disabled={!hasPendingChanges || mutation.isLoading}
-      >
-        Update
-      </button>
-      <div className="flex flex-col">
-        <div>
-          <GameweekCarousel
-            gameweeks={gameweeks}
-            cgw={currentGameweek}
-            changeGW={handleGWChange}
-          />
+      <div className="flex flex-col ">
+        <div className="flex w-full items-center justify-around pb-8 pl-10 pr-10 pt-8 shadow-md">
+          <div>
+            <button
+              className="btn bg-orange-200 hover:bg-orange-100"
+              onClick={handleClick}
+              disabled={!hasPendingChanges || mutation.isLoading}
+            >
+              Update
+            </button>
+          </div>
+          <div>
+            <GameweekCarousel
+              gameweeks={gameweeks}
+              cgw={selectedGameweek}
+              changeGW={handleGWChange}
+            />
+          </div>
+          <div>
+            <span onClick={}>Go to current</span>
+          </div>
         </div>
-        <div className="h-screen w-full overflow-y-auto pb-10 pt-10">
+        <div className="h-screen overflow-y-auto p-10">
           <FixturesView
-            cgw={currentGameweek + 1}
+            cgw={selectedGameweek + 1}
             update={{ updatedPredictions, handleUpdates }}
             em={{ errorMessages, setErrorMessages }}
           />

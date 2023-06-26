@@ -12,7 +12,7 @@ const Home: NextPage = () => {
       `}</style>
 
       <div className="flex">
-        <div className="h-screen flex-1 p-10">
+        <div className="flex-1">
           <PredictionView />
         </div>
         <div className="w-auto">
