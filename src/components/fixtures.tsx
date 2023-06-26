@@ -196,7 +196,7 @@ export function FixturesView({
   };
 
   return (
-    <div className="mx-auto lg:w-1/2">
+    <div className="mx-auto xl:w-1/2">
       <ul className="space-y-20">
         {fixtures.map((fixture) => {
           const currentIndex = initializedPredictions.findIndex(
